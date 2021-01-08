@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "node TBH.js"
+    "start": "node guc-portal.js"
   },
   "repository": {
     "type": "git",
