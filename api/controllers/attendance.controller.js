@@ -15,6 +15,7 @@ const {
   cantManualSignIn,
 } = require('../constants/errorCodes')
 const leavesModel = require('../../models/leaves.model')
+const { parse } = require('query-string')
 
 //no signin abl el sa3a 7 law 3amlt signin ba3d 7 tetkteb 7 same for signout
 const signIn = async (req, res) => {
@@ -199,6 +200,10 @@ const signOut = async (req, res) => {
         }
       )
       const addDay = filteredAttendance.length > 1 ? false : true
+      month = parseInt(day) < 11 ? parse(month) - 1 : month
+      month = `${
+        parseInt(month) < 10 ? '0' + parseInt(month) : parseInt(month)
+      }`
 
       const signOutTime = `${year}-${month}-${day}T${hour}:${min}:00.0000`
       workAttendance(
