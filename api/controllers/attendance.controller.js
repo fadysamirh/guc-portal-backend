@@ -174,7 +174,7 @@ const signOut = async (req, res) => {
         moment(attendance.signInTime).month() === moment().month() && //same month
         moment(attendance.signInTime).year() === moment().year() //sameyear
     )
-
+    console.log(filteredAttendance)
     let canSignOut = false
     let signOutId = '-1'
     let signInTime = '-1'
