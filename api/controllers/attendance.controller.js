@@ -140,7 +140,6 @@ const signOut = async (req, res) => {
         ? '0' + moment().hour()
         : moment().hour()
     }`
-    console.log(parseInt(hour))
     if (parseInt(hour) < 7) {
       return res.json({
         statusCode: cantSignInAfter19,
@@ -174,7 +173,7 @@ const signOut = async (req, res) => {
         moment(attendance.signInTime).month() === moment().month() && //same month
         moment(attendance.signInTime).year() === moment().year() //sameyear
     )
-    console.log(filteredAttendance)
+    console.log(filteredAttendance.length)
     let canSignOut = false
     let signOutId = '-1'
     let signInTime = '-1'
@@ -207,6 +206,7 @@ const signOut = async (req, res) => {
         parseInt(month) === 1 && parseInt(day) < 11
           ? `${parseInt(year) - 1}`
           : year
+
       month =
         parseInt(day) < 11
           ? parseInt(month) === 1
@@ -217,6 +217,7 @@ const signOut = async (req, res) => {
       month = `${
         parseInt(month) < 10 ? '0' + parseInt(month) : parseInt(month)
       }`
+
       workAttendance(
         academicId,
         moment().day(),
