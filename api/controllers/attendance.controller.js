@@ -419,11 +419,20 @@ const manualSignOut = async (req, res) => {
       console.log(filteredAttendance.length)
       const addDay = filteredAttendance.length > 1 ? false : true
       console.log(addDay)
-      month = parseInt(day) < 11 ? `${parseInt(month) - 1}` : month
+      month =
+        parseInt(day) < 11
+          ? parseInt(month) === 1
+            ? '12'
+            : `${parseInt(month) - 1}`
+          : month
 
       month = `${
         parseInt(month) < 10 ? '0' + parseInt(month) : parseInt(month)
       }`
+      year =
+        parseInt(month) === 1 && parseInt(day) < 11
+          ? `${parseInt(year) - 1}`
+          : year
 
       workAttendance(
         academicId,
