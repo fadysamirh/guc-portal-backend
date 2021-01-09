@@ -1,5 +1,5 @@
 const express = require('express')
-const router = express.Router()
+const gerouter = express.Router()
 const {
   requestChangeDayOff,
   updateRequest,
@@ -39,7 +39,7 @@ router.post(
   validateViewSentReq,
   verifyToken,
   verifyUser,
-  verifyHOD,
+  verifyAC,
   viewSentReq
 )
 router.post(
