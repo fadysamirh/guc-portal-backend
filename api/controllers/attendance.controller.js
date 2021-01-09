@@ -923,7 +923,9 @@ const viewExtraMissingWorkedHours = async (req, res) => {
     academicId: academicId,
     month:
       attendance.hasOwnProperty('month') && attendance.hasOwnProperty('year')
-        ? attendance.month
+        ? parseInt(attendance.month) < 10
+          ? `0${parseInt(attendance.month)}`
+          : attendance.month
         : moment().month() + 1,
     year:
       attendance.hasOwnProperty('month') && attendance.hasOwnProperty('year')
