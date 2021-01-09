@@ -202,6 +202,11 @@ const signOut = async (req, res) => {
       const addDay = filteredAttendance.length > 1 ? false : true
 
       const signOutTime = `${year}-${month}-${day}T${hour}:${min}:00.0000`
+
+      year =
+        parseInt(month) === 1 && parseInt(day) < 11
+          ? `${parseInt(year) - 1}`
+          : year
       month =
         parseInt(day) < 11
           ? parseInt(month) === 1
@@ -212,11 +217,6 @@ const signOut = async (req, res) => {
       month = `${
         parseInt(month) < 10 ? '0' + parseInt(month) : parseInt(month)
       }`
-      year =
-        parseInt(month) === 1 && parseInt(day) < 11
-          ? `${parseInt(year) - 1}`
-          : year
-
       workAttendance(
         academicId,
         moment().day(),
@@ -430,6 +430,11 @@ const manualSignOut = async (req, res) => {
       console.log(filteredAttendance.length)
       const addDay = filteredAttendance.length > 1 ? false : true
       console.log(addDay)
+      year =
+        parseInt(month) === 1 && parseInt(day) < 11
+          ? `${parseInt(year) - 1}`
+          : year
+
       month =
         parseInt(day) < 11
           ? parseInt(month) === 1
@@ -440,10 +445,6 @@ const manualSignOut = async (req, res) => {
       month = `${
         parseInt(month) < 10 ? '0' + parseInt(month) : parseInt(month)
       }`
-      year =
-        parseInt(month) === 1 && parseInt(day) < 11
-          ? `${parseInt(year) - 1}`
-          : year
 
       workAttendance(
         academicId,
