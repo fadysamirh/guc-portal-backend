@@ -1,5 +1,5 @@
 const express = require('express')
-const gerouter = express.Router()
+const router = express.Router()
 const {
   requestChangeDayOff,
   updateRequest,
