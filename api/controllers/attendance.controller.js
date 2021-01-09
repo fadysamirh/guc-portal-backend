@@ -948,12 +948,14 @@ const viewExtraMissingWorkedHours = async (req, res) => {
       statusCode: success,
       message: 'You have extra worked hours',
       hours: myHours,
+      type: 'extra',
     })
   } else {
     return res.json({
       statusCode: success,
       message: 'You have missing working hours',
       hours: -1 * myHours,
+      type: 'missing',
     })
   }
 }
