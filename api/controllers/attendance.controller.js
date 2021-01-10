@@ -669,11 +669,12 @@ const viewMyAttendanceRecord = async (req, res) => {
     // }
 
     console.log(
-      `${attendance.year}-${
+      `${
         parseInt(attendance.month) < 10
           ? '0' + parseInt(attendance.month)
           : parseInt(attendance.month)
-      }-11T00:00:00.0000`
+      }`,
+      'yooooooo'
     )
     const startDate =
       attendance.hasOwnProperty('month') && attendance.hasOwnProperty('year')
