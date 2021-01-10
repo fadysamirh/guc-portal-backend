@@ -277,6 +277,12 @@ const unAssignSlot = async (req, res) => {
       slot: slot.slot,
       locationName: slot.locationName,
     })
+    if (!sameSlotFound) {
+      return res.json({
+        statusCode: errorCodes.notYourCourse,
+        error: 'Didnt find the same slot ya instructor',
+      })
+    }
 
     //check if that instructor is assigned to that course
     const instructorsCourse = await staffCoursesModel.findOne({
