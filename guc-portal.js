@@ -72,5 +72,5 @@ app.use((req, res, next) => {
   next()
 })
 connectDB()
-const port = 3000
+const port = 2023
 app.listen(port, () => console.log(`Server up and running on ${port}`))
