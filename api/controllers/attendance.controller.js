@@ -667,9 +667,17 @@ const viewMyAttendanceRecord = async (req, res) => {
     //     error: 'Account not found!',
     //   })
     // }
+    month = `${parseInt(month) < 10 ? '0' + parseInt(month) : parseInt(month)}`
+
     const startDate =
       attendance.hasOwnProperty('month') && attendance.hasOwnProperty('year')
-        ? moment(`${attendance.year}-${attendance.month}-11T00:00:00.0000`)
+        ? moment(
+            `${attendance.year}-${
+              parseInt(attendance.month) < 10
+                ? '0' + parseInt(attendance.month)
+                : parseInt(attendance.month)
+            }-11T00:00:00.0000`
+          )
         : moment().set('date', 11).set('hours', 0).set('minutes', 0)
 
     //end date is either a month+startDate or if we haven't reached the end of the month
