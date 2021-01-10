@@ -739,6 +739,9 @@ const cancelLeaveReq = async (req, res) => {
   try {
     const Account = req.body.Account
     const leaveId = req.body.leaveId
+
+    const leaveFound = await leavesModel.findById(leaveId)
+
     const account = await accountsModel.findOne({
       academicId: leaveFound.academicId,
     })
@@ -749,8 +752,6 @@ const cancelLeaveReq = async (req, res) => {
         error: 'member account not found',
       })
     }
-
-    const leaveFound = await leavesModel.findById(leaveId)
 
     if (!leaveFound) {
       return res.json({
