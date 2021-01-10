@@ -777,9 +777,13 @@ const viewStaffAttendanceRecord = async (req, res) => {
         academicId: academicId,
       })
 
-      const filteredAttendanceFound = attendanceFound.filter((attendance) =>
-        moment(attendance.signInTime).isBetween(startDate, endDate)
-      )
+      console.log(attendanceFound)
+      const filteredAttendanceFound = attendanceFound.filter((attendance) => {
+        console.log(attendance)
+        console.log(startDate)
+        console.log(endDate)
+        return moment(attendance.signInTime).isBetween(startDate, endDate)
+      })
       // console.log(moment(attendance.signInTime))
       // console.log(startDate, 'start')
       // console.log(endDate, 'end')
