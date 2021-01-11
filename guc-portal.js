@@ -19,7 +19,7 @@ const attendance = require('./api/routers/attendace.router')
 const replacementsRequests = require('./api/routers/replacementsRequests.router')
 const changeDayOff = require('./api/routers/changeDayOff.router')
 
-const { connectDB } = require('./config/dbConfig')
+const { connectDB } = require('./config/DBConfig')
 app.use(cors())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -72,5 +72,9 @@ app.use((req, res, next) => {
   next()
 })
 connectDB()
+<<<<<<< HEAD
 const port = 2023
+=======
+const port = process.env.PORT || 3000
+>>>>>>> d353a71d9329709f88c9edca5bb32effc849fb43
 app.listen(port, () => console.log(`Server up and running on ${port}`))

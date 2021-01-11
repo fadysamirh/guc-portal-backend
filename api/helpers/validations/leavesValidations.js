@@ -59,7 +59,7 @@ const validateCompensationRequestLeave = (req, res, next) => {
         .required(),
       year: Joi.string().min(4).required(),
     }).required(),
-    reasonForCompensation: Joi.string().require(),
+    reasonForCompensation: Joi.string().required(),
   })
 
   const isValid = Joi.validate(req.body, schema)

@@ -39,7 +39,7 @@ router.post(
   validateViewSentReq,
   verifyToken,
   verifyUser,
-  verifyHOD,
+  verifyAC,
   viewSentReq
 )
 router.post(
