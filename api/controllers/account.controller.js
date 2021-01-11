@@ -140,7 +140,7 @@ const update_profile = async (req, res) => {
   try {
     const Account = req.body.AccountUpdated
 
-    const academicId = req.body.Account.academicId
+    const academicId = req.body.academicIdToUpdate
 
     const account = await AccountModel.findOne({
       academicId: academicId,
@@ -151,7 +151,8 @@ const update_profile = async (req, res) => {
         error: 'User not found',
       })
     }
-    if (Account.email) {
+    console.log(account.email, Account.email)
+    if (Account.email && account.email != Account.email) {
       const findEmail = await AccountModel.findOne({
         email: Account.email.toString().toLowerCase(),
       })
@@ -162,7 +163,7 @@ const update_profile = async (req, res) => {
         })
       }
     }
-    if (Account.phoneNumber) {
+    if (Account.phoneNumber && account.phoneNumber != Account.phoneNumber) {
       const findPhone = await AccountModel.findOne({
         phoneNumber: Account.phoneNumber,
       })
@@ -465,8 +466,6 @@ const deleteProfile = async (req, res) => {
   try {
     const { Account } = req.body
 
-    const { id } = Account
-
     const account = await AccountModel.findOne({
       academicId: Account.academicId,
     })
@@ -477,10 +476,29 @@ const deleteProfile = async (req, res) => {
       })
     }
 
-    await AccountModel.findByIdAndDelete(id)
+    await AccountModel.findByIdAndDelete(account.id)
 
     return res.json({
       statusCode: errorCodes.success,
+    })
+  } catch (exception) {
+    console.log(exception)
+    return res.json({
+      statusCode: errorCodes.unknown,
+      error: 'Something went wrong',
+    })
+  }
+}
+
+const viewAllAccounts = async (req, res) => {
+  //TODO
+  try {
+    const { Account } = req.body
+    const accounts = await AccountModel.find()
+
+    return res.json({
+      statusCode: errorCodes.success,
+      accounts,
     })
   } catch (exception) {
     console.log(exception)
@@ -776,6 +794,7 @@ const viewExtraMissingWorkedHoursHelper = async (academicId, attendance) => {
 }
 
 module.exports = {
+  viewAllAccounts,
   calculateMySalary,
   calculateSalary,
   updateSalary,

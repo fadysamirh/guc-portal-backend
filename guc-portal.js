@@ -72,5 +72,6 @@ app.use((req, res, next) => {
   next()
 })
 connectDB()
-const port = process.env.PORT || 3001
+
+const port = process.env.PORT || 2023
 app.listen(port, () => console.log(`Server up and running on ${port}`))

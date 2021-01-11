@@ -4,11 +4,13 @@ const {
   createDepartment,
   deleteDepartment,
   updateDepartment,
+  viewAllDep,
 } = require('../controllers/departments.controller')
 const {
   validateCreateDepartment,
   validateDeleteDepartment,
   validateUpdateDepartment,
+  ValidateViewAllDep,
 } = require('../helpers/validations/departmentsValidations')
 const { verifyAC } = require('../helpers/authentication/ACAuthentication') // verifies that he is AC
 const { verifyHR } = require('../helpers/authentication/HRAuthentication') // verifies that he is HR
@@ -45,5 +47,14 @@ router.post(
   verifyUser,
   verifyHR,
   updateDepartment
+)
+
+router.post(
+  '/viewAllDep',
+  ValidateViewAllDep,
+  verifyToken,
+  verifyUser,
+  verifyHR,
+  viewAllDep
 )
 module.exports = router

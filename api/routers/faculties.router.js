@@ -4,11 +4,13 @@ const {
   createFaculty,
   deleteFaculty,
   updateFaculty,
+  viewAllFac,
 } = require('../controllers/faculties.controller')
 const {
   validateCreatefaculty,
   validateDeleteFaculty,
   validateUpdateFaculty,
+  validateViewAllFac,
 } = require('../helpers/validations/facultiesValidations')
 
 const { verifyAC } = require('../helpers/authentication/ACAuthentication') // verifies that he is AC
@@ -47,6 +49,14 @@ router.post(
   verifyUser,
   verifyHR,
   updateFaculty
+)
+router.post(
+  '/viewAllFac',
+  validateViewAllFac,
+  verifyToken,
+  verifyUser,
+  verifyHR,
+  viewAllFac
 )
 
 module.exports = router

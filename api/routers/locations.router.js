@@ -5,6 +5,7 @@ const {
   assignLocation,
   deleteLocation,
   updateLocation,
+  viewLocations,
 } = require('../controllers/locations.controller')
 const {
   verifyToken,
@@ -16,6 +17,7 @@ const {
   validateAssignLocations,
   validateDeleteLocation,
   validateUpdateLocation,
+  validateViewLocations,
 } = require('../helpers/validations/locationsValidations')
 
 router.post(
@@ -50,5 +52,14 @@ router.post(
   verifyUser,
   verifyHR,
   updateLocation
+)
+
+router.post(
+  '/viewLocations',
+  validateViewLocations,
+  verifyToken,
+  verifyUser,
+  verifyHR,
+  viewLocations
 )
 module.exports = router

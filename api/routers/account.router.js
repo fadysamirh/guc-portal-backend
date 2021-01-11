@@ -15,6 +15,7 @@ const {
   get_profile,
   deleteProfile,
   updateSalary,
+  viewAllAccounts,
 } = accountController
 
 const { verifyAC } = require('../helpers/authentication/ACAuthentication') // verifies that he is AC
@@ -41,13 +42,14 @@ const {
   validateUpdateSalary,
   validateCalculateMySalary,
   validateCalculateSalary,
+  validateViewAllAccounts,
 } = require('../helpers/validations/accountValidations')
 
 router.post(
   '/createAccount',
   validateCreateAccount,
   // verifyToken,
-  verifyHR,
+  //verifyHR,
   createAccount
 )
 router.post('/login', validateLogin, login)
@@ -81,6 +83,15 @@ router.post(
   verifyToken,
   verifyUser,
   calculateMySalary
+)
+
+router.post(
+  '/viewAllAccounts',
+  validateViewAllAccounts,
+  //verifyToken,
+  //verifyUser,
+  // verifyHR,
+  viewAllAccounts
 )
 router.post(
   '/calculateSalary',
