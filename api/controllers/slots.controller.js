@@ -549,6 +549,36 @@ const viewSchedule = async (req, res) => {
     return res.json({ statusCode: 400, error: 'Something went wrong' })
   }
 }
+const viewUnassignedSlots = async (req, res) => {
+  try {
+    const Account = req.body.Account
+    const allSlots = await slotsModel.find({
+      assignedAcademicId: null
+    })
+
+    if (!allSlots) {
+      return res.json({
+        statusCode: errorCodes.slotNotFound,
+        error: 'No slots to view all are linked',
+      })
+    }
+    var result = []
+    for(var i = 0 ; i < allSlots.length ; i++)
+    {
+      const found = await staffCoursesModel.find({ academicId: Account.academicId,
+        courseId: allSlots[i].courseId
+      })
+      if (found)
+      {
+        result.push(allSlots[i])
+      }
+    }
+    return res.json({ statusCode: errorCodes.success , list: result })
+  } catch (exception) {
+    console.log(exception)
+    return res.json({ statusCode: 400, error: 'Something went wrong' })
+  }
+}
 module.exports = {
   viewSchedule,
   createSlot,
@@ -557,4 +587,5 @@ module.exports = {
   reAssignSlot,
   updateSlot,
   unAssignSlot,
+  viewUnassignedSlots
 }

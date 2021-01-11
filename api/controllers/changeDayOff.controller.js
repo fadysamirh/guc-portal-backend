@@ -107,7 +107,7 @@ const requestChangeDayOff = async (req, res) => {
         })
       }
       
-      await changeDayOffModel.findByIdAndUpdate(body.reqId, {status: body.status})
+      await changeDayOffModel.findByIdAndUpdate(body.reqId, {status: body.status, hodComment: body.hodComment})
       console.log(body.status)
       console.log(leaveStatus.REJECTED)
      if(body.status === 'accepted')

@@ -8,6 +8,7 @@ const {
   updateSlot,
   unAssignSlot,
   viewSchedule,
+  viewUnassignedSlots
 } = require('../controllers/slots.controller')
 const {
   validateCreateSlot,
@@ -90,6 +91,14 @@ router.post(
   verifyToken,
   verifyUser,
   viewSchedule
+)
+router.post(
+  '/viewUnassignedSlots',
+  validateViewSchedule,
+  verifyToken,
+  verifyUser,
+  verifyAC,
+  viewUnassignedSlots
 )
 
 module.exports = router
