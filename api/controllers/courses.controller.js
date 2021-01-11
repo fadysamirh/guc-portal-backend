@@ -32,7 +32,6 @@ const createCourse = async (req, res) => {
     }
     const courseFound = await coursesModel.findOne({
       courseId: course.courseId,
-    
     })
 
     if (courseFound) {
@@ -57,7 +56,7 @@ const createCourse = async (req, res) => {
 const deleteCourse = async (req, res) => {
   try {
     const course = req.body
- 
+
     const courseFound = await coursesModel.findOne({
       courseId: course.courseId,
     })
@@ -70,20 +69,22 @@ const deleteCourse = async (req, res) => {
     }
     console.log(course.courseId)
     await staffCoursesModel.deleteMany({ courseId: course.courseId }) //delete all related course linkage
-    const slotsDeleted = await slotsModel.find({ courseId: course.courseId }) 
-    await slotsModel.deleteMany({  courseId: course.courseId }) 
+    const slotsDeleted = await slotsModel.find({ courseId: course.courseId })
+    await slotsModel.deleteMany({ courseId: course.courseId })
     console.log(slotsDeleted)
-    console.log("here")
+    console.log('here')
     console.log(course.courseId)
-    for(var i = 0 ; i< slotsDeleted.length ; i++)
-    {
+    for (var i = 0; i < slotsDeleted.length; i++) {
       await slotLinkingModel.deleteMany({ slotId: slotsDeleted[i].id })
       await replacementsRequestsModel.deleteMany({ slotId: slotsDeleted[i].id })
     }
-   await coursesModel.findByIdAndDelete(courseFound.id, function (err, result) {
-      console.log(err)
-      console.log(result)
-    })
+    await coursesModel.findByIdAndDelete(
+      courseFound.id,
+      function (err, result) {
+        console.log(err)
+        console.log(result)
+      }
+    )
 
     return res.json({ statusCode: 0000 })
   } catch (exception) {
@@ -97,16 +98,15 @@ const updateCourse = async (req, res) => {
     const course = req.body
     const courseFound = await coursesModel.findOne({
       courseId: course.courseId,
-    
     })
-    
+
     if (!courseFound) {
       return res.json({
         statusCode: 101,
         error: 'course not found',
       })
     }
-   
+
     coursesModel.findByIdAndUpdate(
       courseFound.id,
       course,
@@ -689,7 +689,17 @@ const unassignCourseMember = async (req, res) => {
     return res.json({ statusCode: 400, error: 'Something went wrong' })
   }
 }
+const viewAllCourses = async (req, res) => {
+  try {
+    const courses = await coursesModel.find()
+    //check if course exists
 
+    return res.json({ statusCode: 0000, courses })
+  } catch (exception) {
+    console.log(exception)
+    return res.json({ statusCode: 400, error: 'Something went wrong' })
+  }
+}
 module.exports = {
   unassignCourseMember,
   unassignCourseCoordinator,
@@ -701,4 +711,5 @@ module.exports = {
   createCourse,
   updateCourse,
   deleteCourse,
+  viewAllCourses,
 }

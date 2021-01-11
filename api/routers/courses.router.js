@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const {
+  viewAllCourses,
   createCourse,
   updateCourse,
   deleteCourse,
@@ -18,6 +19,7 @@ const {
   validateDeleteCourse,
   validateAssign,
   validateUnassign,
+  validateViewAllCourses,
 } = require('../helpers/validations/coursesValidations')
 
 const { verifyAC } = require('../helpers/authentication/ACAuthentication') // verifies that he is AC
@@ -38,6 +40,8 @@ router.post('/createCourse', validateCreateCourse, createCourse)
 router.post('/updateCourse', validateUpdateCourse, updateCourse)
 
 router.post('/deleteCourse', validateDeleteCourse, deleteCourse)
+
+router.post('/viewAllCourses', validateViewAllCourses, viewAllCourses)
 
 router.post(
   '/assignCourseInstructor',
