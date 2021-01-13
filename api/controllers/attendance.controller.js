@@ -1294,6 +1294,7 @@ const calculateDeduction = async (req, res) => {
     }
 
     return res.json({
+      statusCode: success,
       deductedHours:
         salaryDeductionHours === undefined
           ? 'You have no missing hours or your missing hours are less than 2.98 hours; therefore no deductions from missing hours'

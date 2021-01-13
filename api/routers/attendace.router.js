@@ -32,7 +32,12 @@ const {
   validateViewMyAttendanceRecord,
 } = require('../helpers/validations/attendanceValidations')
 
-router.post('/signIn', validateSignInOut, verifyToken, verifyUser, signIn)
+router.post(
+  '/signIn',
+  validateSignInOut,
+  //  verifyToken, verifyUser,
+  signIn
+)
 router.post('/signOut', validateSignInOut, verifyToken, verifyUser, signOut)
 router.post(
   '/viewMyAttendanceRecord',
