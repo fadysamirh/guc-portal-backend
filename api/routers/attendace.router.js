@@ -14,6 +14,7 @@ const {
   viewStaffWithMissingDays,
   viewAllMyAttendanceRecord,
   viewAllStaffAttendanceRecord,
+  calculateDeduction,
 } = require('../controllers/attendance.controller')
 const {
   verifyToken,
@@ -114,5 +115,6 @@ router.post(
   verifyHR,
   viewAllStaffAttendanceRecord
 )
+router.post('/getDeductions', calculateDeduction)
 
 module.exports = router
