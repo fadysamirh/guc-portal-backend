@@ -115,6 +115,12 @@ router.post(
   verifyHR,
   viewAllStaffAttendanceRecord
 )
-router.post('/getDeductions', calculateDeduction)
+router.post(
+  '/getDeductions',
+  validateViewMyAttendanceRecord,
+  verifyToken,
+  verifyUser,
+  calculateDeduction
+)
 
 module.exports = router
