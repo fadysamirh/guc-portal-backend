@@ -9,6 +9,7 @@ const viewStaff = async (req, res) => {
   try {
     const account = req.body.Account
     const details = req.body
+    var staff = []
     const accountFound = await AccountModel.findOne({
       academicId: account.academicId,
     })
@@ -36,6 +37,7 @@ const viewStaff = async (req, res) => {
       if (!courseFound) {
         return res.json({
           statusCode: 101,
+          staff: staff,
           message: 'course does not exist',
         })
       }

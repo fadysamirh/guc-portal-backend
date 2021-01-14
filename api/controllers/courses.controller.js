@@ -492,7 +492,7 @@ const unassignCourseInstructor = async (req, res) => {
       })
     }
     //check if assignment exists
-    const staffCourse = await staffCoursesModel.create({
+    const staffCourse = await staffCoursesModel.findOne({
       courseId: courseId,
       academicId: assignedAcademicId,
     })
