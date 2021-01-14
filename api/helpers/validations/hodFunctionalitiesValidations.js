@@ -58,6 +58,7 @@ const validateViewTeachingAssignments = (req, res, next) => {
     Account: Joi.object({
       academicId: Joi.string().required(),
     }).required(),
+    courseId: Joi.string()
   })
 
   const isValid = Joi.validate(req.body, schema)

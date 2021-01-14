@@ -10,7 +10,7 @@ const requestMaternityLeave = async (req, res) => {
   try {
     const Account = req.body.Account
     const leaveDay = req.body.leaveDay
-    const comments = req.body.comments
+    const comments = leaveDay.comments
 
     var day = leaveDay.day
     var month = leaveDay.month
@@ -877,6 +877,35 @@ const noSignOutInThisDay = async (date, academicId) => {
   return true
 }
 
+const viewAllLeaves = async (req, res) => {
+  try {
+    const Account = req.body.Account
+    const accountFound = await accountsModel.findOne({
+      academicId: Account.academicId,
+    })
+    const allLeaves = await leavesModel.find({
+    })
+    const department = accountFound.department
+
+    let leavesFound = []
+    for (var i = 0 ; i< allLeaves.length; i++)
+    {
+      const accountFound2 = await accountsModel.findOne({
+        academicId: allLeaves[i].academicId,
+      })
+      if (accountFound2.department === department )
+      {
+        leavesFound.push(allLeaves[i])
+      }
+    }
+
+    return res.json({ statusCode: errorCodes.success, leaves: leavesFound })
+  } catch (exception) {
+    console.log(exception)
+    return res.json({ statusCode: 400, error: 'Something went wrong' })
+  }
+}
+
 module.exports = {
   rejectLeave,
   requestCompensationLeave,
@@ -890,4 +919,5 @@ module.exports = {
   acceptSickLeave,
   viewLeaves,
   cancelLeaveReq,
+  viewAllLeaves
 }

@@ -10,6 +10,17 @@ const slotLinkingRequest = async (req, res) => {
     const Account = req.body.Account
     const slot = req.body.slot
     const acc = await AccountModel.findOne({ academicId: Account.academicId })
+    const found = await slotLinkingModel.find({
+      slotId: slot.id,
+      academicId: Account.academicId,
+    })
+
+    if (found.length !== 0) {
+      return res.json({
+        statusCode: 1001,
+        error: 'already applied',
+      })
+    }
     if (!acc) {
       return res.json({
         statusCode: errorCodes.accountDoesNotExist,
