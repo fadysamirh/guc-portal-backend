@@ -14,6 +14,7 @@ const {
   viewStaffWithMissingDays,
   viewAllMyAttendanceRecord,
   viewAllStaffAttendanceRecord,
+  calculateDeduction,
 } = require('../controllers/attendance.controller')
 const {
   verifyToken,
@@ -31,7 +32,12 @@ const {
   validateViewMyAttendanceRecord,
 } = require('../helpers/validations/attendanceValidations')
 
-router.post('/signIn', validateSignInOut, verifyToken, verifyUser, signIn)
+router.post(
+  '/signIn',
+  validateSignInOut,
+  //  verifyToken, verifyUser,
+  signIn
+)
 router.post('/signOut', validateSignInOut, verifyToken, verifyUser, signOut)
 router.post(
   '/viewMyAttendanceRecord',
@@ -113,6 +119,13 @@ router.post(
   verifyUser,
   verifyHR,
   viewAllStaffAttendanceRecord
+)
+router.post(
+  '/getDeductions',
+  validateViewMyAttendanceRecord,
+  verifyToken,
+  verifyUser,
+  calculateDeduction
 )
 
 module.exports = router

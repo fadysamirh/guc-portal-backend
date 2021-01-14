@@ -266,11 +266,24 @@ const viewDaysOff = async (req, res) => {
   const viewTeachingAssignments = async (req, res) => {
     try {
       const account = req.body.Account
+      const course = req.body.courseId
       const accountFound = await AccountModel.findOne({
         academicId: account.academicId
     })
-
-    
+   if(course !== undefined){
+   courseFound =  await coursesModel.findOne
+    (
+        {
+            courseId: course
+        }
+    )
+    if (!courseFound) {
+      return res.json({
+        statusCode: 101,
+        error: 'course does not exist',
+      })
+    }
+  }
       if (!accountFound) {
         return res.json({
           statusCode: 101,
@@ -279,13 +292,26 @@ const viewDaysOff = async (req, res) => {
       }
      
       const departmentFound = accountFound.department
-      const courses = await coursesModel.find
+      var courses = [];
+      if(course === undefined)
+      {
+       courses = await coursesModel.find
       (
           {
               department: departmentFound
           }
       )
-
+        }
+        else
+        {
+           courses = await coursesModel.find
+          (
+              {
+                  courseId : course ,
+                  department: departmentFound
+              }
+          )
+        }
       var coursesSlots=[];
       for(var i = 0  ; i<courses.length;i++)
       {

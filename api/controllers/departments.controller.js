@@ -80,8 +80,9 @@ const deleteDepartment = async (req, res) => {
       department: department.name,
     })
     for (var i = 0; i < coursesFound.length; i++) {
-      coursesModel.findByIdAndUpdate(coursesFound[i].id,
-        {department: null},
+      coursesModel.findByIdAndUpdate(
+        coursesFound[i].id,
+        { department: null },
         function (err, result) {
           console.log(err)
           console.log(result)
@@ -105,8 +106,8 @@ const updateDepartment = async (req, res) => {
     const facultyNewFound = await facultyModel.findOne({
       name: department.department.faculty,
     })
-    const accountsWithDepartment =await accountsModel.find({
-      department: department.name
+    const accountsWithDepartment = await accountsModel.find({
+      department: department.name,
     })
 
     if (!facultyFound) {
@@ -125,10 +126,6 @@ const updateDepartment = async (req, res) => {
       name: department.name,
       faculty: department.faculty,
     })
-    const departmentNewFound = await departmentModel.findOne({
-      name: department.name,
-      faculty: department.department.faculty,
-    })
 
     if (!departmentFound) {
       return res.json({
@@ -136,12 +133,7 @@ const updateDepartment = async (req, res) => {
         error: 'department not found',
       })
     }
-    if (!departmentNewFound) {
-      return res.json({
-        statusCode: 101,
-        error: 'new department not found',
-      })
-    }
+
     await departmentModel.findByIdAndUpdate(
       departmentFound.id,
       department.department,
@@ -155,11 +147,9 @@ const updateDepartment = async (req, res) => {
         department: department.name,
       })
       for (var i = 0; i < accountsWithDepartment.length; i++) {
-       
-       await accountsModel.findByIdAndUpdate(
-          accountsWithDepartment[i].id,
-         {department: department.department.name}
-        )
+        await accountsModel.findByIdAndUpdate(accountsWithDepartment[i].id, {
+          department: department.department.name,
+        })
       }
       for (var i = 0; i < coursesFound.length; i++) {
         const newCourse = coursesFound[i]
@@ -180,11 +170,21 @@ const updateDepartment = async (req, res) => {
     return res.json({ statusCode: 400, error: 'Something went wrong' })
   }
 }
+const viewAllDep = async (req, res) => {
+  try {
+    const departments = await departmentModel.find()
 
+    return res.json({ statusCode: 0000, departments })
+  } catch (exception) {
+    console.log(exception)
+    return res.json({ statusCode: 400, error: 'Something went wrong' })
+  }
+}
 // update department wa2fa 3ala youssef head of department
 
 module.exports = {
   deleteDepartment,
   createDepartment,
   updateDepartment,
+  viewAllDep,
 }

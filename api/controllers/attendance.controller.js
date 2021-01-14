@@ -15,6 +15,7 @@ const {
   cantManualSignIn,
 } = require('../constants/errorCodes')
 const leavesModel = require('../../models/leaves.model')
+const { parse } = require('query-string')
 
 //no signin abl el sa3a 7 law 3amlt signin ba3d 7 tetkteb 7 same for signout
 const signIn = async (req, res) => {
@@ -139,7 +140,6 @@ const signOut = async (req, res) => {
         ? '0' + moment().hour()
         : moment().hour()
     }`
-    console.log(parseInt(hour))
     if (parseInt(hour) < 7) {
       return res.json({
         statusCode: cantSignInAfter19,
@@ -173,7 +173,7 @@ const signOut = async (req, res) => {
         moment(attendance.signInTime).month() === moment().month() && //same month
         moment(attendance.signInTime).year() === moment().year() //sameyear
     )
-
+    console.log(filteredAttendance.length)
     let canSignOut = false
     let signOutId = '-1'
     let signInTime = '-1'
@@ -201,6 +201,23 @@ const signOut = async (req, res) => {
       const addDay = filteredAttendance.length > 1 ? false : true
 
       const signOutTime = `${year}-${month}-${day}T${hour}:${min}:00.0000`
+
+      year =
+        parseInt(month) === 1 && parseInt(day) < 11
+          ? `${parseInt(year) - 1}`
+          : year
+
+      month =
+        parseInt(day) < 11
+          ? parseInt(month) === 1
+            ? '12'
+            : `${parseInt(month) - 1}`
+          : month
+
+      month = `${
+        parseInt(month) < 10 ? '0' + parseInt(month) : parseInt(month)
+      }`
+
       workAttendance(
         academicId,
         moment().day(),
@@ -414,6 +431,22 @@ const manualSignOut = async (req, res) => {
       console.log(filteredAttendance.length)
       const addDay = filteredAttendance.length > 1 ? false : true
       console.log(addDay)
+      year =
+        parseInt(month) === 1 && parseInt(day) < 11
+          ? `${parseInt(year) - 1}`
+          : year
+
+      month =
+        parseInt(day) < 11
+          ? parseInt(month) === 1
+            ? '12'
+            : `${parseInt(month) - 1}`
+          : month
+
+      month = `${
+        parseInt(month) < 10 ? '0' + parseInt(month) : parseInt(month)
+      }`
+
       workAttendance(
         academicId,
         moment().day(),
@@ -637,13 +670,14 @@ const viewMyAttendanceRecord = async (req, res) => {
     const startDate =
       attendance.hasOwnProperty('month') && attendance.hasOwnProperty('year')
         ? moment(`${attendance.year}-${attendance.month}-11T00:00:00.0000`)
-        : moment().set('date', 11).set('hours', 0).set('minutes', 0)
+        : moment().set('date', 10).set('hours', 0).set('minutes', 0)
 
     //end date is either a month+startDate or if we haven't reached the end of the month
     //we will do our business days calculations and getting attendance docs
     //using the current date as the endDate
     const endDate = startDate.clone()
     endDate.add(1, 'month')
+    endDate.set('date', 11)
 
     if (
       attendance.hasOwnProperty('month') &&
@@ -727,14 +761,21 @@ const viewStaffAttendanceRecord = async (req, res) => {
     // }
     const startDate =
       attendance.hasOwnProperty('month') && attendance.hasOwnProperty('year')
-        ? moment(`${attendance.year}-${attendance.month}-11T00:00:00.0000`)
-        : moment().set('date', 11).set('hours', 0).set('minutes', 0)
+        ? moment(
+            `${attendance.year}-${
+              parseInt(attendance.month) < 10
+                ? '0' + parseInt(attendance.month)
+                : attendance.month
+            }-11T00:00:00.0000`
+          )
+        : moment().set('date', 10).set('hours', 0).set('minutes', 0)
 
     //end date is either a month+startDate or if we haven't reached the end of the month
     //we will do our business days calculations and getting attendance docs
     //using the current date as the endDate
     const endDate = startDate.clone()
     endDate.add(1, 'month')
+    endDate.set('date', 11)
 
     if (
       attendance.hasOwnProperty('month') &&
@@ -815,7 +856,13 @@ const viewMissingDays = async (req, res) => {
     console.log(attendance.month)
     const startDate =
       attendance.hasOwnProperty('month') && attendance.hasOwnProperty('year')
-        ? moment(`${attendance.year}-${attendance.month}-11T00:00:00.0000`)
+        ? moment(
+            `${attendance.year}-${
+              parseInt(attendance.month) < 10
+                ? '0' + parseInt(attendance.month)
+                : attendance.month
+            }-10T00:00:00.0000`
+          )
         : moment().set('date', 11).set('hours', 0).set('minutes', 0)
 
     //end date is either a month+startDate or if we haven't reached the end of the month
@@ -824,6 +871,7 @@ const viewMissingDays = async (req, res) => {
     const tempDate = startDate.clone()
 
     tempDate.add(1, 'month')
+    tempDate.set('date', 11)
 
     const endDate = moment().isBefore(tempDate) ? moment() : tempDate
 
@@ -923,7 +971,9 @@ const viewExtraMissingWorkedHours = async (req, res) => {
     academicId: academicId,
     month:
       attendance.hasOwnProperty('month') && attendance.hasOwnProperty('year')
-        ? attendance.month
+        ? parseInt(attendance.month) < 10
+          ? `0${parseInt(attendance.month)}`
+          : attendance.month
         : moment().month() + 1,
     year:
       attendance.hasOwnProperty('month') && attendance.hasOwnProperty('year')
@@ -948,12 +998,14 @@ const viewExtraMissingWorkedHours = async (req, res) => {
       statusCode: success,
       message: 'You have extra worked hours',
       hours: myHours,
+      type: 'extra',
     })
   } else {
     return res.json({
       statusCode: success,
       message: 'You have missing working hours',
       hours: -1 * myHours,
+      type: 'missing',
     })
   }
 }
@@ -963,7 +1015,9 @@ const viewStaffWithMissingDaysHours = async (req, res) => {
 
   let month =
     attendance.hasOwnProperty('month') && attendance.hasOwnProperty('year')
-      ? attendance.month
+      ? parseInt(attendance.month) < 10
+        ? '0' + parseInt(attendance.month)
+        : attendance.month
       : moment().month() + 1
 
   let year =
@@ -996,7 +1050,9 @@ const viewStaffWithMissingDays = async (req, res) => {
 
   let month =
     attendance.hasOwnProperty('month') && attendance.hasOwnProperty('year')
-      ? attendance.month
+      ? parseInt(attendance.month) < 10
+        ? '0' + parseInt(attendance.month)
+        : attendance.month
       : moment().month() + 1
 
   let year =
@@ -1034,7 +1090,9 @@ const viewStaffWithMissingHours = async (req, res) => {
 
     let month =
       attendance.hasOwnProperty('month') && attendance.hasOwnProperty('year')
-        ? attendance.month
+        ? parseInt(attendance.month) < 10
+          ? '0' + parseInt(attendance.month)
+          : attendance.month
         : moment().month() + 1
 
     let year =
@@ -1076,7 +1134,11 @@ const hasMissingDays = async (academicId, attendance) => {
   //used for our start date otherwise we will use the current month and year
   console.log(attendance.month)
   const startDate = moment(
-    `${attendance.year}-${attendance.month}-11T00:00:00.0000`
+    `${attendance.year}-${
+      parseInt(attendance.month) < 10
+        ? '0' + parseInt(attendance.month)
+        : attendance.month
+    }-10T00:00:00.0000`
   )
 
   //end date is either a month+startDate or if we haven't reached the end of the month
@@ -1085,12 +1147,10 @@ const hasMissingDays = async (academicId, attendance) => {
   const tempDate = startDate.clone()
 
   tempDate.add(1, 'month')
+  tempDate.set('date', 11)
 
   const endDate = moment().isBefore(tempDate) ? moment() : tempDate
 
-  console.log(
-    `startDate: ${startDate},,,, endDate: ${endDate},,,,, tempDate: ${tempDate}`
-  )
   const accountFound = await accountsModel.find({ academicId: academicId })
 
   if (!accountFound) {
@@ -1104,7 +1164,11 @@ const hasMissingDays = async (academicId, attendance) => {
     academicId: academicId,
     month:
       attendance.hasOwnProperty('month') && attendance.hasOwnProperty('year')
-        ? `${attendance.month}`
+        ? `${
+            parseInt(attendance.month) < 10
+              ? '0' + parseInt(attendance.month)
+              : attendance.month
+          }`
         : `${moment().month() + 1}`,
     year:
       attendance.hasOwnProperty('month') && attendance.hasOwnProperty('year')
@@ -1125,8 +1189,6 @@ const hasMissingDays = async (academicId, attendance) => {
     accountFound[0].dayOff
   )
 
-  console.log(businessDays)
-
   return businessDays - workedDays - leavesDays
 }
 const hasMissingHours = async (academicId, attendance) => {
@@ -1142,7 +1204,9 @@ const hasMissingHours = async (academicId, attendance) => {
     academicId: academicId,
     month:
       attendance.hasOwnProperty('month') && attendance.hasOwnProperty('year')
-        ? attendance.month
+        ? parseInt(attendance.month) < 10
+          ? '0' + parseInt(attendance.month)
+          : attendance.month
         : moment().month() + 1,
     year:
       attendance.hasOwnProperty('month') && attendance.hasOwnProperty('year')
@@ -1164,6 +1228,93 @@ const hasMissingHours = async (academicId, attendance) => {
   }
 }
 
+const getMissingHours = async (academicId, attendance) => {
+  const accountFound = await accountsModel.find({ academicId: academicId })
+  if (!accountFound) {
+    return res.json({
+      statusCode: accountNotFound,
+      error: 'Account not found!',
+    })
+  }
+
+  const attendanceFound = await workAttendanceModel.find({
+    academicId: academicId,
+    month:
+      attendance.hasOwnProperty('month') && attendance.hasOwnProperty('year')
+        ? parseInt(attendance.month) < 10
+          ? '0' + parseInt(attendance.month)
+          : attendance.month
+        : moment().month() + 1,
+    year:
+      attendance.hasOwnProperty('month') && attendance.hasOwnProperty('year')
+        ? attendance.year
+        : moment().year(),
+  })
+  console.log('hereeee')
+  console.log(
+    attendance.hasOwnProperty('month') && attendance.hasOwnProperty('year')
+      ? parseInt(attendance.month) < 10
+        ? '0' + parseInt(attendance.month)
+        : attendance.month
+      : moment().month() + 1
+  )
+  console.log(
+    attendance.hasOwnProperty('month') && attendance.hasOwnProperty('year')
+      ? attendance.year
+      : moment().year()
+  )
+  if (attendanceFound.length === 0) return true
+
+  let myHours =
+    attendanceFound[0].totalWorkedHours -
+    attendanceFound[0].totalWorkedDays * 8.4
+  console.log('hrs', myHours)
+  return myHours
+}
+
+const calculateDeduction = async (req, res) => {
+  try {
+    let academicId = req.body.Account.academicId
+    const attendance = req.body.Attendance
+
+    const accountFound = await accountsModel.findOne({ academicId: academicId })
+
+    if (!accountFound) {
+      return res.json({
+        statusCode: accountNotFound,
+        error: 'Account not found!',
+      })
+    }
+
+    const salary = accountFound.salary
+    let missingHours = await getMissingHours(academicId, attendance)
+
+    const missingDays = await hasMissingDays(academicId, attendance)
+    // console.log(missingHours)
+    let salaryDeductionHours
+    let salaryDeductionDays = missingDays * (salary / 60)
+    if (missingHours < -2.98) {
+      salaryDeductionHours = missingHours * (salary / 180) * -1
+    }
+
+    return res.json({
+      statusCode: success,
+      deductedHours:
+        salaryDeductionHours === undefined
+          ? 'You have no missing hours or your missing hours are less than 2.98 hours; therefore no deductions from missing hours'
+          : `You have ${
+              missingHours * -1
+            } missing hours; therefore ${salaryDeductionHours} are deducted from salary`,
+      deductedDays:
+        salaryDeductionDays === 0
+          ? 'You have 0 missing days; therefore 0 deductions from missing days'
+          : `You have ${missingDays} missing days; therefore ${salaryDeductionDays} are deducted from salary`,
+    })
+  } catch (e) {
+    return res.json({ statusCode: unknown, error: 'Something went wrong!' })
+  }
+}
+
 module.exports = {
   signIn,
   signOut,
@@ -1178,4 +1329,5 @@ module.exports = {
   viewStaffWithMissingDays,
   viewAllMyAttendanceRecord,
   viewAllStaffAttendanceRecord,
+  calculateDeduction,
 }

@@ -10,7 +10,7 @@ const requestMaternityLeave = async (req, res) => {
   try {
     const Account = req.body.Account
     const leaveDay = req.body.leaveDay
-    const comments = req.body.comments
+    const comments = leaveDay.comments
 
     var day = leaveDay.day
     var month = leaveDay.month
@@ -739,6 +739,9 @@ const cancelLeaveReq = async (req, res) => {
   try {
     const Account = req.body.Account
     const leaveId = req.body.leaveId
+
+    const leaveFound = await leavesModel.findById(leaveId)
+
     const account = await accountsModel.findOne({
       academicId: leaveFound.academicId,
     })
@@ -749,8 +752,6 @@ const cancelLeaveReq = async (req, res) => {
         error: 'member account not found',
       })
     }
-
-    const leaveFound = await leavesModel.findById(leaveId)
 
     if (!leaveFound) {
       return res.json({
@@ -876,6 +877,106 @@ const noSignOutInThisDay = async (date, academicId) => {
   return true
 }
 
+const viewAllLeaves = async (req, res) => {
+  try {
+    const Account = req.body.Account
+    const accountFound = await accountsModel.findOne({
+      academicId: Account.academicId,
+    })
+    const allLeaves = await leavesModel.find({
+    })
+    const department = accountFound.department
+
+    let leavesFound = []
+    for (var i = 0 ; i< allLeaves.length; i++)
+    {
+      const accountFound2 = await accountsModel.findOne({
+        academicId: allLeaves[i].academicId,
+      })
+      if (accountFound2.department === department )
+      {
+        leavesFound.push(allLeaves[i])
+      }
+    }
+
+    return res.json({ statusCode: errorCodes.success, leaves: leavesFound })
+  } catch (exception) {
+    console.log(exception)
+    return res.json({ statusCode: 400, error: 'Something went wrong' })
+  }
+}
+
+const acceptCompensationLeave = async (req, res) => {
+  try {
+    const Account = req.body.Account
+    const leaveId = req.body.leaveId
+
+    const HOD = await accountsModel.findOne({
+      academicId: Account.academicId,
+    })
+
+    if (!HOD) {
+      return res.json({
+        statusCode: errorCodes.accountNotFound,
+        error: 'instructor account not found',
+      })
+    }
+
+    const leaveFound = await leavesModel.findById(leaveId)
+
+    if (!leaveFound) {
+      return res.json({
+        statusCode: errorCodes.leaveNotFound,
+        error: 'leave not found requested',
+      })
+    }
+    if (!(leaveFound.type === leaveTypes.COMPENSATION)) {
+      return res.json({
+        statusCode: errorCodes.notRightLeaveType,
+        error: 'leave not the right type',
+      })
+    }
+
+    if (leaveFound.status === leaveStatus.ACCEPTED) {
+      return res.json({
+        statusCode: errorCodes.alreadyAccepted,
+        error: 'H.O.D already accepted this request',
+      })
+    }
+    else{
+      leaveFound.status = leaveStatus.ACCEPTED
+    }
+
+    const account = await accountsModel.findOne({
+      academicId: leaveFound.academicId,
+    })
+
+    if (!account) {
+      return res.json({
+        statusCode: errorCodes.accountNotFound,
+        error: 'member account not found',
+      })
+    }
+
+    if (account.department !== HOD.department) {
+      return res.json({
+        statusCode: errorCodes.notYourDepartment,
+        error: 'Not your department ',
+      })
+    }
+
+   
+
+   
+    await leavesModel.findByIdAndUpdate(leaveFound.id, leaveFound)
+
+    return res.json({ statusCode: errorCodes.success })
+  } catch (exception) {
+    console.log(exception)
+    return res.json({ statusCode: 400, error: 'Something went wrong' })
+  }
+}
+
 module.exports = {
   rejectLeave,
   requestCompensationLeave,
@@ -889,4 +990,6 @@ module.exports = {
   acceptSickLeave,
   viewLeaves,
   cancelLeaveReq,
+  viewAllLeaves,
+  acceptCompensationLeave
 }
