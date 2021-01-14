@@ -132,7 +132,7 @@ const requestChangeDayOff = async (req, res) => {
       if (sentRequests.length !== 0) {
         return res.json({ statusCode: 0000, list: sentRequests })
       } else {
-        return res.json({ statusCode: 0000, error: 'no requests sent' })
+        return res.json({ statusCode: 0000,  list: sentRequests  })
       }
     } catch (exception) {
       console.log(exception)
