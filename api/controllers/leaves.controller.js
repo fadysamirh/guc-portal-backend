@@ -906,6 +906,77 @@ const viewAllLeaves = async (req, res) => {
   }
 }
 
+const acceptCompensationLeave = async (req, res) => {
+  try {
+    const Account = req.body.Account
+    const leaveId = req.body.leaveId
+
+    const HOD = await accountsModel.findOne({
+      academicId: Account.academicId,
+    })
+
+    if (!HOD) {
+      return res.json({
+        statusCode: errorCodes.accountNotFound,
+        error: 'instructor account not found',
+      })
+    }
+
+    const leaveFound = await leavesModel.findById(leaveId)
+
+    if (!leaveFound) {
+      return res.json({
+        statusCode: errorCodes.leaveNotFound,
+        error: 'leave not found requested',
+      })
+    }
+    if (!(leaveFound.type === leaveTypes.COMPENSATION)) {
+      return res.json({
+        statusCode: errorCodes.notRightLeaveType,
+        error: 'leave not the right type',
+      })
+    }
+
+    if (leaveFound.status === leaveStatus.ACCEPTED) {
+      return res.json({
+        statusCode: errorCodes.alreadyAccepted,
+        error: 'H.O.D already accepted this request',
+      })
+    }
+    else{
+      leaveFound.status = leaveStatus.ACCEPTED
+    }
+
+    const account = await accountsModel.findOne({
+      academicId: leaveFound.academicId,
+    })
+
+    if (!account) {
+      return res.json({
+        statusCode: errorCodes.accountNotFound,
+        error: 'member account not found',
+      })
+    }
+
+    if (account.department !== HOD.department) {
+      return res.json({
+        statusCode: errorCodes.notYourDepartment,
+        error: 'Not your department ',
+      })
+    }
+
+   
+
+   
+    await leavesModel.findByIdAndUpdate(leaveFound.id, leaveFound)
+
+    return res.json({ statusCode: errorCodes.success })
+  } catch (exception) {
+    console.log(exception)
+    return res.json({ statusCode: 400, error: 'Something went wrong' })
+  }
+}
+
 module.exports = {
   rejectLeave,
   requestCompensationLeave,
@@ -919,5 +990,6 @@ module.exports = {
   acceptSickLeave,
   viewLeaves,
   cancelLeaveReq,
-  viewAllLeaves
+  viewAllLeaves,
+  acceptCompensationLeave
 }

@@ -13,7 +13,8 @@ const {
   acceptSickLeave,
   rejectLeave,
   cancelLeaveReq,
-  viewAllLeaves
+  viewAllLeaves,
+  acceptCompensationLeave
 } = require('../controllers/leaves.controller')
 const {
   verifyToken,
@@ -71,6 +72,14 @@ router.post(
   verifyUser,
   verifyHOD,
   acceptAccidentalLeave
+)
+router.post(
+  '/acceptCompensationLeave',
+  validateacceptLeave,
+  verifyToken,
+  verifyUser,
+  verifyHOD,
+  acceptCompensationLeave
 )
 router.post(
   '/acceptAnnualLeave',
