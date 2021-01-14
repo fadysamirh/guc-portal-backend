@@ -351,7 +351,7 @@ const change_password = async (req, res) => {
   try {
     const { Credentials, Account } = req.body
 
-    const { academicId, id } = Account
+    const { academicId } = Account
     const account = await AccountModel.findOne({
       academicId: Account.academicId,
     })
@@ -383,7 +383,7 @@ const change_password = async (req, res) => {
     const saltKey = bcrypt.genSaltSync(10)
     const hashed_pass = bcrypt.hashSync(Credentials.newPassword, saltKey)
 
-    await AccountModel.findByIdAndUpdate(id, { password: hashed_pass })
+    await AccountModel.findByIdAndUpdate(account.id, { password: hashed_pass })
 
     return res.json({ statusCode: errorCodes.success })
   } catch (exception) {
