@@ -61,6 +61,7 @@ const viewStaff = async (req, res) => {
         {
           return res.json({
             statusCode: 0,
+            staff : staff ,
             message: 'no staff for this course',
           })
           
