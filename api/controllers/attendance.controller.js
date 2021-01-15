@@ -669,7 +669,7 @@ const viewMyAttendanceRecord = async (req, res) => {
     // }
     const startDate =
       attendance.hasOwnProperty('month') && attendance.hasOwnProperty('year')
-        ? moment(`${attendance.year}-${attendance.month}-11T00:00:00.0000`)
+        ? moment(`${attendance.year}-${attendance.month}-10T00:00:00.0000`)
         : moment().set('date', 10).set('hours', 0).set('minutes', 0)
 
     //end date is either a month+startDate or if we haven't reached the end of the month
@@ -687,12 +687,14 @@ const viewMyAttendanceRecord = async (req, res) => {
         academicId: academicId,
       })
 
+      console.log(attendanceFound)
+
       const filteredAttendanceFound = attendanceFound.filter((attendance) =>
         moment(attendance.signInTime).isBetween(startDate, endDate)
       )
       // console.log(moment(attendance.signInTime))
-      // console.log(startDate, 'start')
-      // console.log(endDate, 'end')
+      console.log(startDate, 'start')
+      console.log(endDate, 'end')
       // console.log(moment(attendance.signInTime).isBetween(startDate, endDate))
 
       return res.json({
