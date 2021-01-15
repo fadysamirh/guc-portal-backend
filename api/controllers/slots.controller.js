@@ -17,6 +17,7 @@ const locationModel = require('../../models/locations.model')
 const slotsModel = require('../../models/slots.modal')
 const accountsModel = require('../../models/account.model')
 const compensationRequestsModel = require('../../models/replacementsRequests.model')
+const replacementsRequestsModel = require('../../models/replacementsRequests.model')
 
 //create slot
 const createSlot = async (req, res) => {
@@ -39,8 +40,6 @@ const createSlot = async (req, res) => {
       courseId: course.courseId,
       academicId: Account.academicId,
     })
-
-    console.log(staffCourse)
 
     if (!staffCourse) {
       return res.json({
@@ -506,6 +505,12 @@ const viewSchedule = async (req, res) => {
       }
     }
 
+    const reqs = await replacementsRequestsModel.find({
+      date: '2021-01-11T00:00:00.0000',
+      academicIdReciever: 'ac-2',
+      status: 'accepted',
+    })
+
     //loop back to saturday
     var day = moment().add(1, 'day')
 
@@ -514,13 +519,27 @@ const viewSchedule = async (req, res) => {
     }
     for (var i = 0; i < 6; i++) {
       var wd = weekday[i]
-      const d = `${day.year()}-${day.month() + 1}-${day.date()}T00:00:00.0000`
-      const reqs = await compensationRequestsModel.find({
+      var mmm = ''
+
+      if (day.month() + 1 < 10) {
+        mmm = `0${day.month() + 1}`
+      } else {
+        mmm = `${day.month() + 1}`
+      }
+
+      var ddd = ''
+      if (day.date() < 10) {
+        ddd = `0${day.date()}`
+      } else {
+        ddd = `${day.date()}`
+      }
+      const d = `${day.year()}-${mmm}-${ddd}T00:00:00.0000`
+
+      const reqs = await replacementsRequestsModel.find({
         date: d,
         academicIdReciever: Account.academicId,
-        hodStatus: leaveStatus.ACCEPTED,
+        status: leaveStatus.ACCEPTED,
       })
-      console.log(reqs)
 
       for (var j = 0; j < reqs.length; j++) {
         const slot = await slotsModel.findById(reqs[j].slotId)
@@ -545,7 +564,6 @@ const viewSchedule = async (req, res) => {
 
     return res.json({ statusCode: errorCodes.success, Schedule: ScheduleList })
   } catch (exception) {
-    console.log(exception)
     return res.json({ statusCode: 400, error: 'Something went wrong' })
   }
 }
@@ -553,7 +571,7 @@ const viewUnassignedSlots = async (req, res) => {
   try {
     const Account = req.body.Account
     const allSlots = await slotsModel.find({
-      assignedAcademicId: null
+      assignedAcademicId: null,
     })
 
     if (!allSlots) {
@@ -563,19 +581,17 @@ const viewUnassignedSlots = async (req, res) => {
       })
     }
     var result = []
-    for(var i = 0 ; i < allSlots.length ; i++)
-    {
-      const found = await staffCoursesModel.find({ academicId: Account.academicId,
-        courseId: allSlots[i].courseId
+    for (var i = 0; i < allSlots.length; i++) {
+      const found = await staffCoursesModel.find({
+        academicId: Account.academicId,
+        courseId: allSlots[i].courseId,
       })
-      if (found)
-      {
+      if (found) {
         result.push(allSlots[i])
       }
     }
-    return res.json({ statusCode: errorCodes.success , list: result })
+    return res.json({ statusCode: errorCodes.success, list: result })
   } catch (exception) {
-    console.log(exception)
     return res.json({ statusCode: 400, error: 'Something went wrong' })
   }
 }
@@ -587,5 +603,5 @@ module.exports = {
   reAssignSlot,
   updateSlot,
   unAssignSlot,
-  viewUnassignedSlots
+  viewUnassignedSlots,
 }
