@@ -669,7 +669,13 @@ const viewMyAttendanceRecord = async (req, res) => {
     // }
     const startDate =
       attendance.hasOwnProperty('month') && attendance.hasOwnProperty('year')
-        ? moment(`${attendance.year}-${attendance.month}-10T00:00:00.0000`)
+        ? moment(
+            `${attendance.year}-${
+              parseInt(attendance.month) < 10
+                ? '0' + parseInt(attendance.month)
+                : attendance.month
+            }-10T00:00:00.0000`
+          )
         : moment().set('date', 10).set('hours', 0).set('minutes', 0)
 
     //end date is either a month+startDate or if we haven't reached the end of the month
@@ -896,7 +902,11 @@ const viewMissingDays = async (req, res) => {
       academicId: academicId,
       month:
         attendance.hasOwnProperty('month') && attendance.hasOwnProperty('year')
-          ? `${attendance.month}`
+          ? `${
+              parseInt(attendance.month) < 10
+                ? '0' + parseInt(attendance.month)
+                : attendance.month
+            }`
           : `${moment().month() + 1}`,
       year:
         attendance.hasOwnProperty('month') && attendance.hasOwnProperty('year')
